@@ -49,7 +49,7 @@ flowchart TD
 ### 1. Non-Linear Hydrodynamic Mass Balance & Torricelli's Law
 The volumetric rate of change equals the difference between inflow and gravity-driven orifice discharge:
 $$A(h) \frac{dh(t)}{dt} = Q_{in}(t) - a \sqrt{2 g h(t)}$$
-*(Where $A(h)$ is tank cross-sectional area, $Q_{in}$ is inflow rate, $a$ is orifice area, and $g$ is gravity).*
+*(Where $A(h)$is tank cross-sectional area,$Q_{in}$is inflow rate,$a$is orifice area, and$g$ is gravity).*
 
 ### 2. First-Order Linearized Transfer Function
 Linearizing around a nominal operating level $h_0$ yields a standard first-order plant:
