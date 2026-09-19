@@ -30,7 +30,7 @@ Modern process industries require exceptional robustness in fluid regulation sys
 
 ## System Architecture & Control Loop Diagram
 
-mermaid
+```mermaid
 flowchart TD
     SP(["Level Setpoint SP(t)"]) --> ENGINE["Controller Selection Engine \nOn-Off / PID / IMC / Fuzzy / NARX"]
     
@@ -42,34 +42,34 @@ flowchart TD
     SENSOR -->|Feedback Signal PV(t)| ERROR["Error Junction \ne(t) = SP - PV"]
     
     ERROR --> ENGINE
-
+```
 
 ## Rigorous Theoretical & Mathematical Models
 
 ### 1. Non-Linear Hydrodynamic Mass Balance & Torricelli's Law
 The volumetric rate of change equals the difference between inflow and gravity-driven orifice discharge:
-$$A(h) \frac{"dh(t)"}{dt} = Q_{"in"}(t) - a \sqrt{"2 g h(t)"}$$
-*(Where $A(h)$ is tank cross-sectional area, $Q_{"in"}$ is inflow rate, $a$ is orifice area, and $g$ is gravity).*
+$$A(h) \frac{dh(t)}{dt} = Q_{in}(t) - a \sqrt{2 g h(t)}$$
+*(Where $A(h)$ is tank cross-sectional area, $Q_{in}$ is inflow rate, $a$ is orifice area, and $g$ is gravity).*
 
 ### 2. First-Order Linearized Transfer Function
 Linearizing around a nominal operating level $h_0$ yields a standard first-order plant:
-$$G(s) = \frac{"\Delta H(s)"}{\Delta Q_{"in"}(s)} = \frac{"K_p"}{\tau s + 1}, \quad \text{"where "} \tau = \frac{"A"}{a} \sqrt{"\frac{2 h_0"}{g}}, \quad K_p = \frac{"\tau"}{A}$$
+$$G(s) = \frac{\Delta H(s)}{\Delta Q_{in}(s)} = \frac{K_p}{\tau s + 1}, \quad \text{where } \tau = \frac{A}{a} \sqrt{\frac{2 h_0}{g}}, \quad K_p = \frac{\tau}{A}$$
 
 ### 3. Internal Model Control (IMC) Synthesis & Analytical Tuning
 IMC achieves robust tuning by absorbing the inverted plant model into a low-pass filter:
-$$Q_{"IMC"}(s) = \tilde{"G"}^{-1}(s) f(s) = \frac{"\tau s + 1"}{K_p (\lambda s + 1)}$$
+$$Q_{IMC}(s) = \tilde{G}^{-1}(s) f(s) = \frac{\tau s + 1}{K_p (\lambda s + 1)}$$
 
 ### 4. Takagi-Sugeno Fuzzy Logic Rule Consequent
 The continuous control effort evaluated from $M$ fuzzy rules via weighted averages:
-$$u_{"TS"} = \frac{"\sum_{i=1"}^M w_i (p_{"i0"} + p_{"i1"} e + p_{"i2"} \dot{"e"})}{\sum_{"i=1"}^M w_i}$$
+$$u_{TS} = \frac{\sum_{i=1}^M w_i (p_{i0} + p_{i1} e + p_{i2} \dot{e})}{\sum_{i=1}^M w_i}$$
 
 ### 5. Discrete Velocity SCL PID Formulation with Anti-Windup Clamping
 To prevent integrator windup and ensure smooth manual/auto transitions, the velocity form accumulates incremental adjustments:
-$$u["k"] = \text{"clamp"}\left(u["k-1"] + K_p(e["k"] - e["k-1"]) + K_i T_s e["k"] + \frac{"K_d"}{T_s}(e["k"] - 2e["k-1"] + e["k-2"]), u_{"min"}, u_{"max"}\right)$$
+$$u[k] = \text{clamp}\left(u[k-1] + K_p(e[k] - e[k-1]) + K_i T_s e[k] + \frac{K_d}{T_s}(e[k] - 2e[k-1] + e[k-2]), u_{min}, u_{max}\right)$$
 
 ## Comparative Performance Benchmark Matrix
 
-| Control Strategy | Rise Time ($t_r$) | Settling Time ($t_s$) | Peak Overshoot ($M_p$) | Steady-State Error ($e_{"ss"}$) | CPU Computational Burden |
+| Control Strategy | Rise Time ($t_r$) | Settling Time ($t_s$) | Peak Overshoot ($M_p$) | Steady-State Error ($e_{ss}$) | CPU Computational Burden |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **On-Off Hysteresis** | Extremely Fast | N/A (Oscillates) | High | High (Bounded) | Very Low |
 | **Classical PID** | Moderate | Moderate | Medium | Zero | Low |
@@ -84,9 +84,9 @@ $$u["k"] = \text{"clamp"}\left(u["k-1"] + K_p(e["k"] - e["k-1"]) + K_i T_s e["k"
 4. **HMI Operation**: Use the Factory I/O virtual HMI panel to toggle between the 5 controller algorithms and inject setpoint disturbances.
 
 ## Authentic Artifacts Catalog
-- **PLC Source Code (SCL / XML)**: Stored securely in ["`src/`"](src/).
-- **Digital Twin Simulations**: Factory I/O scenes available in ["`simulation/`"](simulation/).
-- **Architecture & Performance Visuals**: Captured inside ["`docs/images/`"](docs/images/).
+- **PLC Source Code (SCL / XML)**: Stored securely in [`src/`](src/).
+- **Digital Twin Simulations**: Factory I/O scenes available in [`simulation/`](simulation/).
+- **Architecture & Performance Visuals**: Captured inside [`docs/images/`](docs/images/).
 
 ---
 
@@ -95,4 +95,4 @@ Mechatronics Engineer | Mechanical Design & CAD (SolidWorks & AutoCAD) | Prevent
 [GitHub](https://github.com/Hassan-Moqbel) · [Facebook](https://www.facebook.com/share/1BqxAgVjHi/) · [LinkedIn](https://www.linkedin.com/in/hassan-moqbel)
 
 ## License
-This project is licensed under the ["MIT License"](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
