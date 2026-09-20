@@ -1,8 +1,8 @@
 # Hydrodynamic Liquid Level Process Control: Multi-Strategy Digital Twin Benchmark
 
 [![Domain: Process Control](https://img.shields.io/badge/Domain-Process%20Control%20%7C%20Hydrodynamics-blue.svg)](#rigorous-theoretical--mathematical-models)
-[![Control: Advanced SCL](https://img.shields.io/badge/Algorithms-IMC%20%7C%20Fuzzy%20Logic%20%7C%20Velocity%20PID-orange.svg)](#authentic-evidence--artifacts-catalog)
-[![Platform: Siemens S7-1500](https://img.shields.io/badge/Platform-Siemens%20TIA%20Portal%20v17-00599C.svg)](#authentic-evidence--artifacts-catalog)
+[![Control: Advanced SCL](https://img.shields.io/badge/Algorithms-IMC%20%7C%20Fuzzy%20Logic%20%7C%20Velocity%20PID-orange.svg)](#multi-strategy-control-architectures-in-siemens-scl)](#authentic-evidence--artifacts-catalog)
+[![Platform: Siemens S7-1500](https://img.shields.io/badge/Platform-Siemens%20TIA%20Portal%20v17-00599C.svg)](#industrial-standards--safety-compliance)](#authentic-evidence--artifacts-catalog)
 [![Digital Twin: Factory I/O](https://img.shields.io/badge/Digital%20Twin-Factory%20I%2FO%203D-brightgreen.svg)](#system-architecture--control-loop-topology)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -91,9 +91,44 @@ Traditional positional PID algorithms suffer from integrator windup when actuato
 $$
 \Delta u(k) = K_p [e(k) - e(k-1)] + K_i e(k) \Delta t + K_d \frac{e(k) - 2e(k-1) + e(k-2)}{\Delta t}
 $$
+
+The updated control signal is then clamped within absolute actuator saturation limits:
+
 $$
-u(k) = u(k-1) + \Delta u(k)
+u(k) = \text{clip}(u(k-1) + \Delta u(k), \ u_{\text{min}}, \ u_{\text{max}})
 $$
+
+
+---
+
+## Industrial Standards & Safety Compliance
+
+- **ISA-5.1 (Instrumentation Symbols and Identification):** Strict tag designation across the control topology, establishing standardized tags for Hydrostatic Level Transmitters (`LT-101`), Level Indicating Controllers (`LIC-101`), and Modulating Feed Valves (`LV-101`).
+- **IEC 61131-3 (Programmable Controllers - Programming Languages):** Structured Control Language (SCL) implemented with strong data typing, encapsulation within Function Blocks (FBs), and cyclic OB execution ($T_s = 50\text{ ms}$).
+- **IEC 61511 (Functional Safety for the Process Industry):** Automated high-high level alarm (`LAHH`) hard-tripping inflow pumps independently of the software PID loop to prevent vessel overtopping.
+
+---
+
+## Design Failure Mode and Effects Analysis (DFMEA)
+
+| Process Failure Mode | Root Cause Vector | Severity | Engineering Mitigation Strategy |
+| :--- | :--- | :--- | :--- |
+| **Vessel Overflow Spillage** | Valve jammed at $100\%$ stroke | Critical | Independent hardwired high-level float switch cutting pump power contactor (Zero Energy State). |
+| **Centrifugal Pump Cavitation**| Level drained below suction eye | High | Low-level software interlock (`LALL`) forcing immediate pump de-energization to prevent impeller destruction. |
+| **Integrator Saturation Windup**| Sustained external flow disturbance | Medium | Velocity algorithm accumulation freeze (`clip` routine) halting integration once $u(k) \ge 100\%$. |
+| **Actuator High-Cycle Fatigue**| Excessive derivative gain on noise | Medium | Low-pass derivative filter ($N = 10$) attenuating high-frequency hydrostatic measurement ripple. |
+
+---
+
+## Multi-Strategy Control Architectures in Siemens SCL
+
+The control repository partitions each mathematical strategy into self-contained, deterministic Function Blocks (FBs) written in Siemens SCL:
+
+- [`src/PID.scl`](src/PID.scl) — Discrete velocity PID algorithm with dynamic anti-windup clamping.
+- [`src/IMC+PID.scl`](src/IMC+PID.scl) — Analytical Internal Model Control tuner with filter factor $\lambda$.
+- [`src/Takagi-SugenoFuzzy-PI.scl`](src/Takagi-SugenoFuzzy-PI.scl) — Takagi-Sugeno fuzzy inference engine with normalized fuzzification.
+- [`src/On-Off.scl`](src/On-Off.scl) — Dual-threshold hysteresis band controller minimizing contactor wear.
+- [`src/PseudoRandomNumberGenerator.scl`](src/PseudoRandomNumberGenerator.scl) — PRBS generator for non-parametric plant system identification.
 
 ---
 
